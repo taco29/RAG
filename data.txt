@@ -1,0 +1,100 @@
+﻿1. Ensemble Learning
+    • Ensemble Learning là gì?
+    • Là việc kết hợp nhiều model để giải quyết bài toán thay vì sử dụng một model.
+    • Tại sao kết hợp nhiều model?
+        ◦ Khi giải quyết các bài toán, không có model nào hoàn hảo khi đi riêng lẻ bởi quy tắc tradeoff (bias – varience). Vậy nên, để tăng hiệu suất dự đoán, ta kết hợp nhiều model “yếu” để tạo ra một model “mạnh” để giảm bias/variences.
+    • Bagging (Random Forest)
+        ◦ Xây dựng một lượng lớn model trên những subsamples khác nhau, được train độc lập và song song. Đầu ra sẽ được thu thập, tính trung bình cộng để cho ra kết quả cuối cùng.
+        ◦ Random Forest là kỹ thuật bagging minh hoạ rõ cách tiếp cận này bằng cách lấy trung bình từ các decision tree giúp cho model cuối cùng ít bị ảnh hưởng bởi dữ liệu nhiễu và lỗi.
+    • Boosting (AdaBoost, XGBoost)
+        ◦ Boosting sẽ tạo ra các model yếu, học bổ sung lẫn nhau, các model sau sẽ học để hạn chế lỗi từ các model trước. Sẽ lấy kết quả của model cuối cùng làm kết quả trả về.
+            ▪ Để hạn chế sai lầm, Boosting tiến hành đánh trọng số cho các model mới được thêm vào dựa trên các cách tối ưu khác nhau. Tuỳ theo cách đánh trọng số và cách tổng hợp lại từ các model, ta có 2 loại Boosting:
+            ▪ AdaBoost
+                • AdaBoost tiến hành train các model mới dựa trên việc đánh lại trọng số cho các điểm dữ liệu hiện tại nhằm giúp cá mô hình mới tập trung hơn vào các mẫu dữ liệu đang bị học sai. Cụ thể, các bước triển khai thuật toán như sau:
+                    ◦ Khởi tạo weight ban đầu là bằng nhau cho mỗi điểm dữ liệu.
+                    ◦ Tại vòng lặp thứ 
+                        ▪ Train model mới được thêm vào
+                        ▪ Tính toán loss, từ đó tính ra giá trị  của model vừa train
+                        ▪ Cập nhật model chính: 
+                        ▪ Đánh lại trọng số cho các điểm dữ liệu (đoán sai  tăng trọng số và ngược lại)
+                    ◦ Lặp lại với model tiếp theo
+            ▪ Gradient Boosting
+                • Gradient Boosting có quy trình như sau:
+                    ◦ Khởi tạo giá trị pseudo – residuals  là bằng nhau cho mọi điểm dữ liệu
+                    ◦ Tại vòng lặp thứ i:
+                        ▪ Train model mới được thêm vào để fit với giá trị pseudo – residuals đã có
+                        ▪ Tính toán giá trị của model vừa train 
+                        ▪ Cập nhập lại model chính 
+                        ▪ Tính pseudo – residual để làm label có model tiếp theo
+                    ◦ Lặp lại
+            • XGBoost
+                ◦ Là bản nâng cấp của Gradient Boosting thông qua:
+                    ▪ Tích hợp hai dạng điều chuẩn  và giúp cho hạn chế overfit 
+                    ▪ XGBoost được thiết kế để tận dụng khả năng xử lý song song của phần cứng, từ đó thực hiện nhiều phép tính đồng thời, rút ngắn đáng kể thời gian huấn luyện mô hình.
+                    ▪ Thuật toán này được trang bị khả năng xử lý tự động các giá trị bị thiếu trong dữ liệu đầu vào. Người dùng không nhất thiết phải tiền xử lý phức tạp các giá trị này.
+    • Stacking	
+        ◦ Gần với giống với Bagging, Stacking kết hợp nhiều mô hình để cải thiện hiệu suất. Nhưng thay vì sử dụng nhiều mô hình cùng loại, Stacking sử dụng nhiều mô hình đa dạng  sau đó đưa chúng vào một “meta-model” cuối cùng để học cách kết hợp và phát huy tối đa điểm mạnh của từng mô hình.
+        ◦ Cách động của Stacking:
+            ▪ Dữ liệu được chia thành bộ huấn luyện và kiểm tra.
+            ▪ Huấn luyện độc lập  các mô hình cơ bản bằng bộ dữ liệu huấn luyện.
+            ▪ Các dự đoán của các mô hình này trở thành dữ liệu đầu vào mới cho meta-model.
+            ▪ Meta-model được huấn luyện với các đặc trưng mới (dự đoán từ mô hình cơ bản) và các dữ liệu gốc và đưa ra kết quả cuối cùng.
+    • Voting Classifier
+        ◦ Nằm trong kỹ thuật bagging – xây dựng một lượng lớn các model, đầu ra sẽ được tính trung bình cộng để đưa ra kết quả cuối cùng.
+            ▪ Hard-voting: Class đầu ra của mỗi 1 model “yếu” sẽ được coi là 1 vote. Class nhận được nhiều vote nhất sẽ là đầu ra của model “mạnh”.
+            ▪ Soft-voting: Nếu model “yếu” dự đoán xác suất của tất cả class thì tính trung bình cộng xác suất từng class rồi lấy max.
+2. Semi-Supervised Learning
+    • Khái niệm Semi-supervised learning
+        ◦ Là việc kết hợp cả dữ liệu có nhãn và dữ liệu không nhãn trong quá trình training model
+    • Ứng dụng khi dữ liệu nhãn hạn chế
+        ◦ Để gán nhãn dữ liệu thường đòi hỏi một chuyên viên có kĩ năng để phân loại bằng tay (bác sĩ chuẩn đoán phim X-quang). 
+        ◦ Chi phí cho quy trình này khiến tập dữ liệu được gán nhãn hoàn toàn trở nên không khả thi, trong khi dữ liệu không gán nhãn tương đối rẻ tiền. Trong tình huống đó, SSL có giá trị thực tiễn lớn.
+    • Phương pháp cơ bản: 
+        ◦ Self-training
+            ▪ Huấn luyện mô hình trên tập có nhãn
+            ▪ Dùng mô hình đó dự đoán cho tập dữ liệu không nhãn
+            ▪ Lấy những dự đoán mà mô hình tự tin nhất và coi đó là nhãn thật
+            ▪ Thêm các dữ liệu này vào tập huấn luyện và huấn luyện lại
+            ▪ Lặp lại quy trình
+        ◦ Co-training
+            ▪ Co-training sử dụng hai hoặc nhiều mô hình riêng biệt để dạy lẫn nhau. Cách hoạt động:
+                • Chia đặc trưng của dữ liệu thành 2 tập riêng biệt  và 
+                • Huấn luyện mô hình A với  và mô hình B với Y trên tập dữ liệu có nhãn
+                • Mô hình A dựa đoán nhãn cho tập không nhãn, chọn ra những mẫu tự tin nhất và thêm vào tập huấn luyện của mô hình B. Tương tự đối với mô hình B.
+                • Lặp lại quá trình này nhiều vòng.
+3. Probabilistic Graphical Models (PGM)
+    • Bayesian Networks
+        ◦ Bayesian Networks là một công cụ quan trọng, giúp giải quyết vấn đề không chắc chắn bằng cách sử dụng xác suất. 
+        ◦ Bản chất, nó là cách biểu diễn đồ thị của sự phụ thuộc thống kê trên một tập hợp các biến ngẫu nhiên, trong đó các nút đại diện cho các biến, các cạnh đại diện cho các phụ thuộc có điều kiện. 
+        ◦ Bayesian Networks bao gồm các đồ thị có hướng không chu trình kết hợp với một bảng xác suất điều kiện để tính xác suất mà một sự kiện nào sẽ diễn ra. 
+        ◦ Tóm lại, Bayesian là máy tính dựa vào các xác suất của dữ liệu đã có trước của bài toán để tìm ra xác suất của đầu ra cho những đầu vào tiếp theo. 
+    • Markov Networks
+        ◦ Là một mô hình ngẫu nhiên mô tả một chuỗi các sự kiện có khả năng xảy ra, mà xác suất để xảy ra sự kiện tiếp theo chỉ phụ thuộc vào sự kiện hiện tại. Các sự kiện xảy ra trong quá khứ sẽ không được ghi nhớ, sự kiện trong tương lại chỉ phụ thuộc sự kiện hiện tại của mô hình.
+    • Ứng dụng trong Machine Learning
+        ◦ Với Bayesian Networks trong bài toán xử lí dữ liệu bị thiếu,  nó có thể sử dụng các biến liên quan để dự đoán và điền giá trị cho các biến bị thiếu một các chính xác hơn. Ví dụ có dữ liệu “Một khách hàng 30 tuổi, đã mua xe nhưng dữ liệu về thu nhập bị thiếu. Bayesian Networks sẽ tính toán xác suất “Một người 30 tuổi và đã mua xe thì có khả năng thu nhập là bao nhiêu?””
+        ◦ Với Markov Networks trong bài toán phân đoạn ảnh, để xác định một pixel thuộc về “con chó”  hay “bộ PC” thì ta dùng Markov Networks. Nếu pixel A là “con chó” thì pixel hàng xóm B rất có khả năng là “con chó”. Markov Networks mô hình hoá sự phụ thuộc giữa các pixel lân cận rất tốt.
+4. Recommendation Systems
+    • Content-Based Filtering
+        ◦ Gợi ý các item dựa vào profiles của người dùng hoặc dựa vào nội dung/thuộc tính của những item tương tự như item mà người đùng đã chọn trong quá khứ.
+        ◦ Ý tưởng của thuật: từ thông tin mô tả của item dưới dạng vector thuộc tính, dùng các vector này để học mô hình của mỗi user.
+        ◦ Các bước:
+            1. Item Profiling
+                • Phân tích thuộc tính của vật phẩm. Với phim (thể loại, đạo diễn, diễn viên) ta có thể dùng biểu diễn nhị phân. Còn với văn bản, sử dụng TF-IDF để biến văn bản thành vector.
+            2.	User Profiling
+                • Coi mỗi user là một bài toán hồi quy (phân loại). Xây dựng hàm Loss dựa trên sai số giữa dự đoán và nhãn thực tế, sau đó tối ưu hoá để tìm ra  tốt nhất. Sau đó dự đoán được điểm các missing item (các item mà user chưa tương tác)
+    • Collaborative Filtering 
+        ◦ Content-Based Filtering có 2 nhược điểm cơ bản:
+                • Khi build model cho 1 user, các hệ thống content-based không tận dụng được thông tin của các user khác.
+                • Không phải user nào cũng sẵn sàng gắn tags
+        ◦ Những nhược điểm trên có thể giải quyết bằng Colaborative Filtering. Ý tưởng cơ bản của thuật này là dự đoán mức độ yêu thích của một user đối với một item dựa trên các user khác gần giống với user đang xét. 
+        ◦ Có 2 hướng tiếp cận CF:
+            1. Xác định mức  độ quan tâm của mỗi user với một item dựa trên mức độ quan tâm của user gần giống nhau tới item đó (user-user CF)
+            2. Xác định item similarities, từ đó, hệ thống gợi ý những items gần giống với nhữnh items mà user có mức độ quan tâm cao.
+        ◦ Các bước(user-user)
+            1. Khởi tạo ma trận dữ liệu
+                • Sử dụng 3 thành phần data: user, movies, rating. Ma trận này có rất nhiều các giá trị miss. Nhiệm vụ là dựa vào các ô đã có giá trị trong ma trận dự đoán các ô còn trống, sau đó sắp xếp kết quả dự đoán, chọn ra Top-N items theo thứ tự rating giảm dần, từ đó gợi ý cho người dùng.
+            2. Ta cần thay những dấu “?” bởi một giá trị. Ta sử dụng giá trị trung bình cộng ratings của mỗ user bằng cách trừ ratings của mỗi user cho giá trị trung bình ratings tương ứng của user đố và thay dấu “?” bằng giá trị 0
+
+                • Mục đích: Phân loại ratings thành 2 loại âm và dương. Các giá trị 0 là chưa được đánh giá
+            3. Tính toán độ tương đồng bằng cosine similarity. Càng gần 1 thì càng tương đồng, càng gần -1 thì càng đối lập
+            4. Dự đoán ratings của một user với mỗi item dựa trên k users gần nhất (tương tự KNN)
