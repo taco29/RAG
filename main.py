@@ -2,7 +2,7 @@ import os
 from retrieve import Retriever
 from gen import AnswerGenerator
 
-API_KEY = "AIzaSyDy_uT7SS9X1uA6SRiNE04s9zk3wQFfTww"
+API_KEY = ""
 os.environ["GOOGLE_API_KEY"] = API_KEY
 
 def main():
