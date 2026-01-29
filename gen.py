@@ -2,10 +2,10 @@ import os
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_classic.chains.retrieval_qa.base import RetrievalQA
-from retrieve import retriever, get_chunks
+from retrieve import Retriever
 from langchain_core.prompts import ChatPromptTemplate
 
-API_KEY = "AIzaSyBCr_FmUIGVZlUtMyz4So30oUkgwx2wx0I"
+API_KEY = ""
 os.environ["GOOGLE_API_KEY"] = API_KEY
 
 model = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
@@ -40,16 +40,17 @@ Yêu cầu câu trả lời:
 CÂU TRẢ LỜI:
 """)
 
-query = "Bayesian Networks là gì? Chúng được ứng dụng như thế nào trong Machine Learning?"
+query = "Markov Networks là gì? Chúng được ứng dụng như thế nào trong Machine Learning?"
 
 path = r"C:\Users\Admin\Code\Chatbot\RAG\data.txt"
-retriever_instance = retriever(path, k=3)
+retriever_instance = Retriever(path, k=3).get_retriever()
 
 qa_chain = RetrievalQA.from_chain_type(
     llm=model,
     chain_type="stuff",
     retriever=retriever_instance,
-    return_source_documents=True
+    return_source_documents=True,
+    chain_type_kwargs={"prompt": prompt}
 )
 result = qa_chain({"query": query})
 
@@ -63,11 +64,8 @@ for doc in result["source_documents"]:
 
 
 print("\n--- CHUNKS IN THE DOCUMENT ---")
-chunks = get_chunks(path)
-
-print(f"\nTotal chunks: {len(chunks)}")
-
-for i, c in enumerate(chunks):
-    print(f"\n--- Chunk {i+1} ---")
-    print(c.page_content)
-    
+docs = Retriever(path, k=3).get_chunks()
+for i, doc in enumerate(docs):
+    print(f"Chunk {i+1}:")
+    print(doc.page_content)
+    print("--------------------")   

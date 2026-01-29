@@ -3,30 +3,31 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams
 from langchain_qdrant import QdrantVectorStore
 
-client = QdrantClient("http://localhost:6333")
+class CreateVectorStore:
+    def __init__(self, url="http://localhost:6333"):
+        self.client = QdrantClient(url)
 
-def create_vectorstore(documents, embedding):
-    ids = [str(uuid.uuid4()) for _ in documents]
-    try:
-        vector_size = embedding.embedding_dimension
-    except Exception:
+    def create_vectorstore(self, documents, embedding, collection_name="documents"):
+        ids = [str(uuid.uuid4()) for _ in documents]
         try:
-            sample = embedding.embed_query("test")
+            vector_size = embedding.embedding_dimension
         except Exception:
-            sample = embedding.embed_documents(["test"])[0]
-        vector_size = len(sample)
-    client.recreate_collection(
-        collection_name="documents",
-        vectors_config=VectorParams(
-            size=vector_size,
-            distance=Distance.COSINE
+            try:
+                sample = embedding.embed_query("test")
+            except Exception:
+                sample = embedding.embed_documents(["test"])[0]
+            vector_size = len(sample)
+
+        if not self.client.collection_exists(collection_name):
+            self.client.create_collection(
+                collection_name=collection_name,
+                vectors_config=VectorParams(size=vector_size, distance=Distance.COSINE)
+            )
+
+        return QdrantVectorStore.from_documents(
+            documents=documents,
+            embedding=embedding,
+            collection_name=collection_name,
+            url= "http://localhost:6333",
+            ids=ids
         )
-    )
-    vector_store = QdrantVectorStore.from_documents(
-        documents=documents,
-        embedding=embedding,
-        collection_name="documents",
-        url="http://localhost:6333",
-        ids=ids
-    )
-    return vector_store

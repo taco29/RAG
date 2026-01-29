@@ -5,24 +5,18 @@ from langchain_core.documents import Document
 DEFAULT_SEPARATORS = ["\n\n", "\n", "▪", "•", "◦", " ", ""]
 
 class TextChunker:
-    def __init__(self, chunk_size, chunk_overleap):
-        self.chunk_size = chunk_size
-        self.chunk_overleap = chunk_overleap
+    def __init__(self, chunk_size= 800, chunk_overlap=30):
         self.splitter = RecursiveCharacterTextSplitter(
-            chunk_size= self.chunk_size,
-            chunk_overleap=self.chunk_overleap,
-            separators= DEFAULT_SEPARATORS                                                          
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap,
+            separators=DEFAULT_SEPARATORS
         )
-    def load_and_chunk(self, path: str):
+    def load_docs(self, path: str) -> str:
         loader = TextLoader(path, encoding="utf-8")
-        text = loader.load()[0].page_content
-        chunks = self.splitter.split_text(text)
-        return [Document(page_content=c) for c in chunks]
-
-
-class create_documents:
-    def __init__(self, chunks):
-        self.chunks= chunks
-
-    def create_docs(self):
-        docs = Document(page_content=self.chunks)
+        return loader.load()[0].page_content
+    
+    def chunking(self, text: str) -> list[Document]:
+        return [
+            Document(page_content=chunk) 
+            for chunk in self.splitter.split_text(text)
+        ]

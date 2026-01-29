@@ -13,5 +13,5 @@ class EmbeddingModel:
             encode_kwargs={"normalize_embeddings": self.nomalize}
         )
     def get(self):
-        return self._embedding
+        return self.embedding
     
