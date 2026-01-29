@@ -1,21 +1,21 @@
-from chunking import chunking, load_text , create_documents
-from embedding import get_embedding
-from qdrant import create_vectorstore
+from chunking import TextChunker
+from qdrant import CreateVectorStore
+from embedding import EmbeddingModel
 
+class Retriever:
+    def __init__(self, path: str, k: int):
+        self.path = path
+        self.k = k
 
-def retriever(path, k):
-    documents = load_text(path)
-    chunks = chunking(documents, chunk_size=500, chunk_overlap=50)
-    docs = create_documents(chunks)
-
-    embedding = get_embedding()
-    vector_store = create_vectorstore(docs, embedding)
-
-    retriever_instance = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": k})
-    return retriever_instance
-
-def get_chunks(path):
-    documents = load_text(path)
-    chunks = chunking(documents, chunk_size=500, chunk_overlap=50)
-    docs = create_documents(chunks)
-    return docs
+    def get_retriever(self):
+        chunker = TextChunker()
+        text = chunker.load_docs(self.path)
+        docs = chunker.chunking(text)
+        embedding = EmbeddingModel().get()
+        vector_store = CreateVectorStore().create_vectorstore(docs, embedding)
+        return vector_store.as_retriever(search_type="similarity", search_kwargs={"k": self.k})
+    
+    def get_chunks(self):
+        chunker = TextChunker()
+        text = chunker.load_docs(self.path)
+        return chunker.chunking(text)
